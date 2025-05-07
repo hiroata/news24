@@ -6,7 +6,7 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "generate:novel": "node --loader ts-node/esm src/lib/generateNovel.ts",
+        "generate:novel": "node --loader ts-node/esm src/lib/api/generateNovel.ts",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage"

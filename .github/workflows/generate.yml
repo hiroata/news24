@@ -20,7 +20,7 @@ jobs:
         run: npm install
 
       - name: Run generateNovel script
-        run: node --loader ts-node/esm src/lib/generateNovel.ts
+        run: node --loader ts-node/esm src/lib/api/generateNovel.ts
 
       - name: Commit and push generated content
         env:
