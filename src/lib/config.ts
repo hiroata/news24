@@ -1,7 +1,8 @@
-// APIキー
-export const GROK_API_KEY = process.env.XAI_API_KEY || '';
-export const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+// サーバーサイドで利用するAPIキー (環境変数からのみ読み込み、クライアントにエクスポートしない)
+const GROK_API_KEY = process.env.XAI_API_KEY || '';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
+// クライアント側にも公開する設定
 // API URL
 export const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
 export const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent";
@@ -45,4 +46,6 @@ export const EROTIC_DIALOG_PATTERNS = {
   onomatopoeia: ["「ズチュッ、ズチュッ…！チンポがマンコをかき回してぇ…！」"]
 };
 
-// ...必要に応じて他の設定も追加可能...
+// サーバーサイドでのみ利用するAPIキーをエクスポート
+// この方法だとNext.jsではサーバーサイドコンポーネントやAPIルートでのみ利用可能になる
+export { GROK_API_KEY, GEMINI_API_KEY };

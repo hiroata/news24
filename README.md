@@ -27,3 +27,9 @@
 
 - Vercel連携でmainブランチpush時に自動デプロイ
 - 本番環境のAPIキーはVercelの「Environment Variables」で設定
+
+## 注意: APIキー・環境変数の管理
+
+- `.env`ファイルは必ずgit管理外（.gitignore）にしてください。
+- 本番環境ではVercelやGitHub Actionsの「Environment Variables」機能でAPIキーを安全に管理してください。
+- APIキーやシークレット情報は絶対にリポジトリにコミットしないでください。
