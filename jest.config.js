@@ -24,4 +24,14 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.json',
     },
   },
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/__tests__/**',
+    '!src/**/__mocks__/**',
+    '!src/types/**',
+  ],
+  coverageDirectory: '<rootDir>/coverage',
+  coverageReporters: ['lcov', 'text-summary'],
 };

@@ -2,22 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { LanguageCode, DEFAULT_LANGUAGE, getLocalizedFilename } from './i18n';
+import { NovelData } from '../types/novel';
 
 // 小説コンテンツのベースディレクトリ
 const NOVELS_DIRECTORY = path.join(process.cwd(), 'src/content/novels');
-
-// 小説のメタデータと内容の型定義
-export interface NovelData {
-  slug: string;
-  title: string;
-  date: string;
-  tags: string[];
-  excerpt: string;
-  content: string;
-  language: LanguageCode;
-  translatedFrom?: string;
-  audioUrl?: string;
-}
 
 /**
  * すべての小説のスラッグを取得
