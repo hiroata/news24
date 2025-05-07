@@ -3,7 +3,7 @@ import NovelList from "../components/NovelList";
 import TagList from "../components/TagList";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { getAllNovels, getAllTags, NovelData } from "../lib/novels";
-import { DEFAULT_LANGUAGE, LanguageCode, getLanguagePreference } from "../lib/i18n";
+import { LanguageCode, DEFAULT_LANGUAGE, getLanguagePreference } from '../lib/utils/i18n';
 import Head from "next/head";
 import { fetchWithErrorHandling, ApiError, getFriendlyErrorMessage } from "../lib/apiUtils"; // fetchWithErrorHandlingなどをインポート
 

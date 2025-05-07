@@ -1,12 +1,11 @@
-\
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { GetStaticPaths, GetStaticProps } from "next";
-import { useRouter } from \'next/router\';
+import { useRouter } from 'next/router';
 import ReactMarkdown from "react-markdown";
 import TagList from "../../components/TagList";
-import { LanguageCode, DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, isValidLang } from "../../lib/i18n";
+import { LanguageCode, DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, isValidLang } from '../../lib/utils/i18n';
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import Link from "next/link";
 import { AudioPlayer } from "../../components/AudioPlayer";
@@ -33,7 +32,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     });
   });
 
-  return { paths, fallback: \'blocking\' }; // fallback: 'blocking' で ISR も可能に
+  return { paths, fallback: 'blocking' }; // fallback: 'blocking' で ISR も可能に
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -182,6 +181,7 @@ export default function NovelDetailPage({ novel, currentLanguage }: NovelDetailP
         </article>
         
         {novel.availableLanguages && novel.availableLanguages.length > 1 && (
+          <div className="mt-8 pt-4 border-t">
           <div className="mt-8 pt-4 border-t">
             <h3 className="text-lg font-medium mb-2">他の言語で読む:</h3>
             <div className="flex flex-wrap gap-2">

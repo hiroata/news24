@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SUPPORTED_LANGUAGES, getLanguagePreference, saveLanguagePreference, LanguageCode } from '../lib/i18n';
+import { SUPPORTED_LANGUAGES, getLanguagePreference, saveLanguagePreference, LanguageCode } from '../lib/utils/i18n';
 
 interface LanguageSwitcherProps {
   onLanguageChange?: (lang: LanguageCode) => void;
