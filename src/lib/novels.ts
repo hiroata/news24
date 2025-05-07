@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { LanguageCode, DEFAULT_LANGUAGE, getLocalizedFilename } from './i18n';
-import { NovelData } from '../types/novel';
+export type { NovelData } from '../types/novel';
 
 // 小説コンテンツのベースディレクトリ
 const NOVELS_DIRECTORY = path.join(process.cwd(), 'src/content/novels');
