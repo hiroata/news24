@@ -1,7 +1,7 @@
 // クライアント側で利用するAPI呼び出し関数
 // サーバーサイドのAPIを安全に呼び出すためのラッパー
 
-import { fetchWithErrorHandling, logError, getFriendlyErrorMessage } from './apiUtils';
+import { fetchWithErrorHandling, logError, getFriendlyErrorMessage } from '../utils/apiUtils';
 
 /**
  * テキスト生成API呼び出しのためのクライアント側ラッパー

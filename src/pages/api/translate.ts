@@ -1,7 +1,7 @@
 // API Route for translation
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { GEMINI_API_KEY } from '../../lib/config';
-import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/apiUtils'; // logError と getFriendlyErrorMessage をインポート
+import { GEMINI_API_KEY } from '../../lib/utils/config';
+import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/utils/apiUtils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

@@ -5,8 +5,9 @@ import matter from "gray-matter";
 import Link from "next/link";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { Tag } from "../../components/TagList";
-import { getAllTags, getNovelsByTag, NovelData } from "../../lib/novels"; // NovelData をインポート
-import { DEFAULT_LANGUAGE, LanguageCode } from "../../lib/i18n";
+import { getAllTags, getNovelsByTag } from "../../lib/novels";
+import type { NovelData } from "../../types/novel";
+import { DEFAULT_LANGUAGE, LanguageCode } from "../../lib/utils/i18n";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { useState } from "react";
 import TagList from "../../components/TagList";

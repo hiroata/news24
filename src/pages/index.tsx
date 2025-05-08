@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import NovelList from "../components/NovelList";
 import TagList from "../components/TagList";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import { getAllNovels, getAllTags, NovelData } from "../lib/novels";
+import { getAllNovels, getAllTags } from "../lib/novels";
+import type { NovelData } from "../types/novel";
 import { LanguageCode, DEFAULT_LANGUAGE, getLanguagePreference } from '../lib/utils/i18n';
 import Head from "next/head";
-import { fetchWithErrorHandling, ApiError, getFriendlyErrorMessage } from "../lib/apiUtils"; // fetchWithErrorHandlingなどをインポート
+import { fetchWithErrorHandling, ApiError, getFriendlyErrorMessage } from "../lib/utils/apiUtils"; // fetchWithErrorHandlingなどをインポート
 
 export async function getStaticProps() {
   // 共通ライブラリ関数を使用

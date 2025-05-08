@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getAllNovels, NovelData } from '../../../lib/novels';
+import { getAllNovels } from '../../../lib/novels';
+import type { NovelData } from '../../../types/novel';
 import { LanguageCode, DEFAULT_LANGUAGE, isValidLang } from '../../../lib/utils/i18n';
-import { ApiError, getFriendlyErrorMessage } from '../../../lib/apiUtils';
+import { ApiError, getFriendlyErrorMessage } from '../../../lib/utils/apiUtils';
 
 export default async function handler(
   req: NextApiRequest,

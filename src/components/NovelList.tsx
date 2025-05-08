@@ -1,6 +1,6 @@
 import React from "react";
 import NovelCard from "./NovelCard";
-import { NovelData } from "../lib/novels";
+import type { NovelData } from "../types/novel";
 
 type NovelListProps = {
   novels: NovelData[];

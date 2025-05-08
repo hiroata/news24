@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { LanguageCode, DEFAULT_LANGUAGE, getLocalizedFilename } from './i18n';
-export type { NovelData } from '../types/novel';
+import { LanguageCode, DEFAULT_LANGUAGE, getLocalizedFilename } from './utils/i18n';
+import type { NovelData } from '../types/novel';
 
 // 小説コンテンツのベースディレクトリ
 const NOVELS_DIRECTORY = path.join(process.cwd(), 'src/content/novels');
@@ -79,8 +79,8 @@ export function getNovelBySlug(
       excerpt: data.excerpt || content.slice(0, 100), // excerpt自動生成
       content,
       language: lang,
-      translatedFrom: lang !== DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : undefined,
-      audioUrl: data.audioUrl
+      translatedFrom: lang !== DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : null, // undefinedの代わりにnullを使用
+      audioUrl: data.audioUrl || null // こちらも念のためnullに変換
     };
   } catch (error) {
     console.error(`Error reading novel ${slug}:`, error);

@@ -82,3 +82,7 @@ export function getLocalizedFilename(baseName: string, lang: LanguageCode): stri
   }
   return `${baseName}.${lang}`;
 }
+
+export function isValidLang(lang: string): lang is LanguageCode {
+  return lang in SUPPORTED_LANGUAGES;
+}

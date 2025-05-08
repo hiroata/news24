@@ -2,7 +2,7 @@ import React from "react";
 import TagList from "./TagList";
 import Link from "next/link";
 import { AudioPlayer } from "./AudioPlayer";
-import { NovelData } from "../lib/novels";
+import type { NovelData } from "../types/novel";
 
 interface NovelCardProps {
   novel: NovelData;

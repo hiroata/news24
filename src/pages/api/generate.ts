@@ -1,8 +1,8 @@
 // API Route for text generation
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { generateText } from '../../lib/grok_api';
-import { AVAILABLE_MODELS } from '../../lib/config';
-import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/apiUtils'; // logError と getFriendlyErrorMessage をインポート
+import { generateText } from '../../lib/api/grok_api';
+import { AVAILABLE_MODELS } from '../../lib/utils/config';
+import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/utils/apiUtils'; // logError と getFriendlyErrorMessage をインポート
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

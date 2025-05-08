@@ -10,7 +10,8 @@ import LanguageSwitcher from "../../components/LanguageSwitcher";
 import Link from "next/link";
 import { AudioPlayer } from "../../components/AudioPlayer";
 import { useState, useEffect } from "react";
-import { getNovelBySlug, NovelData, getAllNovelSlugs } from "../../lib/novels";
+import { getNovelBySlug, getAllNovelSlugs } from "../../lib/novels";
+import type { NovelData } from "../../types/novel";
 import Head from "next/head";
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -156,8 +157,6 @@ export default function NovelDetailPage({ novel, currentLanguage }: NovelDetailP
           
           <LanguageSwitcher 
             onLanguageChange={handleLanguageChange}
-            currentLang={currentLanguage} // 現在の言語を渡す
-            availableLangs={novel.availableLanguages} // 利用可能な言語を渡す
             className="ml-auto"
           />
         </div>
@@ -181,7 +180,6 @@ export default function NovelDetailPage({ novel, currentLanguage }: NovelDetailP
         </article>
         
         {novel.availableLanguages && novel.availableLanguages.length > 1 && (
-          <div className="mt-8 pt-4 border-t">
           <div className="mt-8 pt-4 border-t">
             <h3 className="text-lg font-medium mb-2">他の言語で読む:</h3>
             <div className="flex flex-wrap gap-2">
