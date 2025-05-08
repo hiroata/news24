@@ -1,4 +1,4 @@
-import { getFriendlyErrorMessage, ApiError, withRetry, delay } from '../../lib/apiUtils';
+import { getFriendlyErrorMessage, ApiError, withRetry, delay } from '../../../lib/utils/apiUtils';
 
 // モックでのタイマー制御を使用
 jest.useFakeTimers();

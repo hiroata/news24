@@ -1,9 +1,8 @@
-// API Route for text generation
-const { generateText } = require('../../lib/api/grok_api');
-const { AVAILABLE_MODELS } = require('../../lib/utils/config');
-const { ApiError, getFriendlyErrorMessage, logError } = require('../../lib/utils/apiUtils');
+import { generateText } from '../../lib/api/grok_api';
+import { AVAILABLE_MODELS } from '../../lib/utils/config';
+import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/utils/apiUtils';
 
-async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -44,5 +43,3 @@ async function handler(req, res) {
     });
   }
 }
-
-module.exports = handler;

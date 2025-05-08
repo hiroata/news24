@@ -1,7 +1,4 @@
 import React from "react";
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import Link from "next/link";
 import Head from "next/head";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -28,36 +25,41 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const tag = params?.tag as string;
+  try {
+    const tag = params?.tag as string;
   
-  // 共通ライブラリ関数を使用
-  const novels = getNovelsByTag(tag);
-  const allTags = getAllTags();
+    // 共通ライブラリ関数を使用
+    const novels = getNovelsByTag(tag);
+    const allTags = getAllTags();
   
-  // 関連タグを抽出 (同じ記事に含まれるタグを関連タグとして抽出)
-  const relatedTagsMap: Record<string, number> = {};
-  novels.forEach(novel => {
-    novel.tags.forEach(t => {
-      if (t !== tag) {
-        relatedTagsMap[t] = (relatedTagsMap[t] || 0) + 1;
-      }
+    // 関連タグを抽出 (同じ記事に含まれるタグを関連タグとして抽出)
+    const relatedTagsMap: Record<string, number> = {};
+    novels.forEach(novel => {
+      novel.tags.forEach(t => {
+        if (t !== tag) {
+          relatedTagsMap[t] = (relatedTagsMap[t] || 0) + 1;
+        }
+      });
     });
-  });
   
-  // 出現回数順に並べ替え
-  const relatedTags = Object.entries(relatedTagsMap)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)  // 上位5件のみ
-    .map(([tag]) => tag);
+    // 出現回数順に並べ替え
+    const relatedTags = Object.entries(relatedTagsMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)  // 上位5件のみ
+      .map(([tag]) => tag);
   
-  return { 
-    props: { 
-      tag, 
-      novels,
-      relatedTags,
-      tagCount: allTags[tag] || 0
-    } 
-  };
+    return { 
+      props: { 
+        tag, 
+        novels,
+        relatedTags,
+        tagCount: allTags[tag] || 0
+      } 
+    };
+  } catch (error) {
+    // 例外発生時は404
+    return { notFound: true };
+  }
 };
 
 interface TagPageProps {
@@ -127,11 +129,6 @@ export default function TagPage({ tag, novels, relatedTags, tagCount }: TagPageP
                 <BookOpenIcon className="h-5 w-5 mr-2 text-primary-500" />
                 記事情報
               </h3>
-              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                <p>#{tag} に関する記事</p>
-                <p>記事数: {novels.length} 件</p>
-                <p>最終更新: {novels[0]?.date || '不明'}</p>
-              </div>
             </div>
           </div>
           

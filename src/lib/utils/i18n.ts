@@ -1,7 +1,7 @@
 // 多言語対応のためのユーティリティと定数
 
 // 対応言語リスト
-const SUPPORTED_LANGUAGES = {
+export const SUPPORTED_LANGUAGES = {
   'ja': {
     name: '日本語',
     nativeName: '日本語',
@@ -39,13 +39,13 @@ const SUPPORTED_LANGUAGES = {
   },
 };
 
-type LanguageCode = keyof typeof SUPPORTED_LANGUAGES;
+export type LanguageCode = keyof typeof SUPPORTED_LANGUAGES;
 
 // デフォルト言語
-const DEFAULT_LANGUAGE: LanguageCode = 'ja';
+export const DEFAULT_LANGUAGE: LanguageCode = 'ja';
 
 // ブラウザの言語設定から対応言語を取得する関数
-function getBrowserLanguage(): LanguageCode {
+export function getBrowserLanguage(): LanguageCode {
   if (typeof window === 'undefined') {
     return DEFAULT_LANGUAGE;
   }
@@ -59,14 +59,14 @@ function getBrowserLanguage(): LanguageCode {
 }
 
 // 言語設定をローカルストレージに保存する関数
-function saveLanguagePreference(lang: LanguageCode): void {
+export function saveLanguagePreference(lang: LanguageCode): void {
   if (typeof window !== 'undefined') {
     localStorage.setItem('preferredLanguage', lang);
   }
 }
 
 // ローカルストレージから言語設定を取得する関数
-function getLanguagePreference(): LanguageCode {
+export function getLanguagePreference(): LanguageCode {
   if (typeof window === 'undefined') {
     return DEFAULT_LANGUAGE;
   }
@@ -76,24 +76,13 @@ function getLanguagePreference(): LanguageCode {
 }
 
 // 言語コードに基づいてファイル名を生成する関数
-function getLocalizedFilename(baseName: string, lang: LanguageCode): string {
+export function getLocalizedFilename(baseName: string, lang: LanguageCode): string {
   if (lang === DEFAULT_LANGUAGE) {
     return baseName;
   }
   return `${baseName}.${lang}`;
 }
 
-function isValidLang(lang: string): lang is LanguageCode {
+export function isValidLang(lang: string): lang is LanguageCode {
   return lang in SUPPORTED_LANGUAGES;
 }
-
-module.exports = {
-  SUPPORTED_LANGUAGES,
-  DEFAULT_LANGUAGE,
-  getBrowserLanguage,
-  saveLanguagePreference,
-  getLanguagePreference,
-  getLocalizedFilename,
-  isValidLang,
-  LanguageCode: undefined // TypeScriptの型はJavaScriptの実行時には利用できません
-};

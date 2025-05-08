@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import NovelList from './NovelList';
-import { NovelData } from '../lib/novels';
+import NovelList from '../../../components/NovelList';
+import type { NovelData } from '../../../types/novel';
 
 const mockNovels: NovelData[] = [
   {

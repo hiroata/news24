@@ -1,18 +1,18 @@
 // サーバーサイドで利用するAPIキー (環境変数からのみ読み込み、クライアントにエクスポートしない)
-const GROK_API_KEY = process.env.XAI_API_KEY || '';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+export const GROK_API_KEY = process.env.XAI_API_KEY || '';
+export const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 // クライアント側にも公開する設定
 // API URL
-const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent";
+export const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
+export const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent";
 
 // モデル設定
-const GROK_MODEL = "grok-3-latest";
-const GEMINI_MODEL = "gemini-2.5-pro-preview-03-25";
+export const GROK_MODEL = "grok-3-latest";
+export const GEMINI_MODEL = "gemini-2.5-pro-preview-03-25";
 
 // 利用可能なモデルリスト
-const AVAILABLE_MODELS = {
+export const AVAILABLE_MODELS = {
   grok: {
     name: "Grok 3",
     model_id: GROK_MODEL,
@@ -26,7 +26,7 @@ const AVAILABLE_MODELS = {
 };
 
 // 文体設定（例）
-const WRITING_STYLES = {
+export const WRITING_STYLES = {
   murakami: "村上龍のような都会的で生々しい描写と冷静な語り口...",
   dan: "団鬼六のようなSM描写に特化した...",
   eromanga: "日本のエロ同人マンガのような過激で卑猥な表現...",
@@ -36,7 +36,7 @@ const WRITING_STYLES = {
 };
 
 // 淫語セリフパターン（例）
-const EROTIC_DIALOG_PATTERNS = {
+export const EROTIC_DIALOG_PATTERNS = {
   ahe: ["「あぁっ…ん゛っ、ン゛ッ…！そこぉっ…！」"],
   beg: ["「お願いぃ…もっと、もっと激しくぅ…！」"],
   shame: ["「こんな場所でぇ…見られたら終わりなのにぃ…！」"],
@@ -44,16 +44,4 @@ const EROTIC_DIALOG_PATTERNS = {
   sub: ["「はいぃ…私はご主人様の専用肉便器ですぅ…！」"],
   positive: ["「あぁっ、最高ぅっ…！チンポがマンコを抉ってきてぇ…！」"],
   onomatopoeia: ["「ズチュッ、ズチュッ…！チンポがマンコをかき回してぇ…！」"]
-};
-
-module.exports = {
-  GROK_API_KEY, 
-  GEMINI_API_KEY,
-  GROK_API_URL,
-  GEMINI_API_URL,
-  GROK_MODEL,
-  GEMINI_MODEL,
-  AVAILABLE_MODELS,
-  WRITING_STYLES,
-  EROTIC_DIALOG_PATTERNS
 };

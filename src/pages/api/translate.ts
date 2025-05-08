@@ -1,8 +1,9 @@
 // API Route for translation
-const { GEMINI_API_KEY } = require('../../lib/utils/config');
-const { ApiError, getFriendlyErrorMessage, logError } = require('../../lib/utils/apiUtils');
+import { GEMINI_API_KEY } from '../../lib/utils/config';
+import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/utils/apiUtils';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -56,8 +57,7 @@ async function handler(req, res) {
 }
 
 // 翻訳APIが完全に実装されるまでのダミー関数
-async function simulateTranslation(text, targetLang) {
-  // 実際のAPIを使用する前の一時的な実装
+async function simulateTranslation(text: string, targetLang: string): Promise<string> {
   if (targetLang === 'ja' && !isJapanese(text)) {
     return `[${targetLang}翻訳] ${text}`;
   } else if (targetLang === 'en' && isJapanese(text)) {
@@ -69,9 +69,7 @@ async function simulateTranslation(text, targetLang) {
 }
 
 // 日本語かどうかを判定する簡易関数
-function isJapanese(text) {
+function isJapanese(text: string): boolean {
   // 日本語の文字コード範囲を検出
   return /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(text);
 }
-
-module.exports = handler;

@@ -1,45 +1,34 @@
-/**
- * API呼び出しに関するユーティリティ関数
- */
+// APIユーティリティ関数とエラー処理のための共通モジュール
 
 /**
- * 一定時間待機する関数
- * @param ms ミリ秒
+ * 指定ミリ秒だけ待機する Promise を返す
  */
-const delay = (ms: number): Promise<void> => 
-  new Promise(resolve => setTimeout(resolve, ms));
+export function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 /**
- * APIリクエスト失敗時のリトライ処理を行うラッパー関数
- * @param fn 実行する非同期関数
- * @param retries リトライ回数
- * @param retryDelay リトライ間の待機時間(ms)
- * @param backoff バックオフ倍率（待機時間を指数関数的に増加させるため）
+ * リトライ処理を実装した関数
  */
-async function withRetry<T>(
+export async function withRetry<T>(
   fn: () => Promise<T>,
-  retries = 3,
-  retryDelay = 1000,
-  backoff = 2
+  retries: number = 3,
+  delayMs: number = 1000,
+  backoff: number = 2
 ): Promise<T> {
   try {
     return await fn();
   } catch (error) {
-    if (retries <= 0) {
-      throw error;
-    }
-    
-    console.log(`API呼び出しに失敗しました。${retryDelay}ms後にリトライします... (残り ${retries} 回)`);
-    await delay(retryDelay);
-    
-    return withRetry(fn, retries - 1, retryDelay * backoff, backoff);
+    if (retries <= 0) throw error;
+    await delay(delayMs);
+    return withRetry(fn, retries - 1, delayMs * backoff, backoff);
   }
 }
 
 /**
  * APIエラーレスポンスを標準化したエラークラス
  */
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
   statusText: string;
   data?: any;
@@ -84,37 +73,37 @@ class ApiError extends Error {
  * - リトライ
  * - レート制限対応
  */
-async function fetchWithErrorHandling(
+export async function fetchWithErrorHandling(
   url: string,
   options: RequestInit = {},
   retries = 3
 ): Promise<Response> {
-  return withRetry(async () => {
-    const response = await fetch(url, options);
+  const response = await withRetry(async () => {
+    const res = await fetch(url, options);
     
-    // レート制限エラーの場合は長めに待機してリトライ
-    if (response.status === 429) {
-      const retryAfter = response.headers.get('Retry-After');
-      const waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : 60000;
-      console.log(`レート制限に達しました。${waitTime}ms後にリトライします...`);
+    // レート制限エラー (429) の場合は少し待機してからリトライ
+    if (res.status === 429) {
+      // レート制限に関するヘッダーがあれば待機時間を調整
+      const retryAfter = res.headers.get('Retry-After');
+      const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : 5000;
       await delay(waitTime);
-      throw new ApiError(429, 'Too Many Requests', 'レート制限に達しました');
+      throw new ApiError(429, 'Too Many Requests', 'Rate limit exceeded, retrying after delay');
     }
     
-    // 成功以外の場合はエラーを投げる
-    if (!response.ok) {
-      const apiError = await ApiError.fromResponse(response);
-      throw apiError;
+    if (!res.ok) {
+      throw await ApiError.fromResponse(res);
     }
     
-    return response;
+    return res;
   }, retries);
+  
+  return response;
 }
 
 /**
  * エラーログ記録用の共通関数
  */
-function logError(error: any, context: string = ''): void {
+export function logError(error: any, context: string = ''): void {
   if (error instanceof ApiError) {
     console.error(`API Error (${context}): [${error.status}] ${error.message}`, error.data);
   } else {
@@ -127,32 +116,18 @@ function logError(error: any, context: string = ''): void {
 /**
  * ユーザーフレンドリーなエラーメッセージを返す
  */
-function getFriendlyErrorMessage(error: any): string {
+export function getFriendlyErrorMessage(error: any): string {
   if (error instanceof ApiError) {
     switch (error.status) {
-      case 401:
-        return '認証エラーが発生しました。再ログインしてください。';
-      case 403:
-        return '権限がありません。アクセス権を確認してください。';
-      case 404:
-        return '指定されたリソースが見つかりません。';
-      case 429:
-        return 'リクエスト制限に達しました。しばらく経ってから再試行してください。';
-      case 500:
-        return 'サーバーエラーが発生しました。時間をおいて再試行してください。';
-      default:
-        return `エラーが発生しました (${error.status}): ${error.message}`;
+      case 400: return 'リクエストに問題があります。入力内容を確認してください。';
+      case 401: return '認証が必要です。再度ログインしてください。';
+      case 403: return 'アクセスが拒否されました。権限がない可能性があります。';
+      case 404: return 'リクエストしたリソースが見つかりませんでした。';
+      case 429: return 'リクエストが多すぎます。しばらく待ってから再試行してください。';
+      case 500: return 'サーバーでエラーが発生しました。時間をおいて再度お試しください。';
+      default: return 'エラーが発生しました。時間をおいて再度お試しください。';
     }
   }
   
-  return 'エラーが発生しました。時間をおいて再試行してください。';
+  return 'エラーが発生しました。時間をおいて再度お試しください。';
 }
-
-module.exports = {
-  delay,
-  withRetry,
-  ApiError,
-  fetchWithErrorHandling,
-  logError,
-  getFriendlyErrorMessage
-};

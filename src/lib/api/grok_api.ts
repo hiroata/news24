@@ -1,4 +1,4 @@
-const { GROK_API_KEY, GROK_API_URL, GROK_MODEL } = require("../utils/config");
+import { GROK_API_KEY, GROK_API_URL, GROK_MODEL } from "../utils/config";
 
 async function generateText(
   prompt: string,
@@ -26,4 +26,4 @@ async function generateText(
   return data.text;
 }
 
-module.exports = { generateText };
+export { generateText };

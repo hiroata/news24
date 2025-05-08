@@ -1,9 +1,9 @@
-const { getAllNovels } = require('../../../lib/novels');
-const i18n = require('../../../lib/utils/i18n');
+import { getAllNovels } from '../../../lib/novels';
+import * as i18n from '../../../lib/utils/i18n';
 const { DEFAULT_LANGUAGE, isValidLang } = i18n;
-const { ApiError, getFriendlyErrorMessage } = require('../../../lib/utils/apiUtils');
+import { ApiError, getFriendlyErrorMessage } from '../../../lib/utils/apiUtils';
 
-async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -35,5 +35,3 @@ async function handler(req, res) {
     });
   }
 }
-
-module.exports = handler;

@@ -1,6 +1,3 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from 'next/router';
 import ReactMarkdown from "react-markdown";
@@ -29,11 +26,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   slugs.forEach(slug => {
     paths.push({ params: { slug: [slug] } });
-
+    // 多言語ファイルの存在確認はlib/novels.ts側で行い、ここでは全言語分のパスを生成
     Object.keys(SUPPORTED_LANGUAGES).forEach(lang => {
       if (lang !== DEFAULT_LANGUAGE) {
-        const langFilePath = path.join(process.cwd(), "src/content/novels", `${slug}.${lang}.md`);
-        if (fs.existsSync(langFilePath)) {
+        // その言語の小説データが存在する場合のみパスを追加
+        const novel = getNovelBySlug(slug, lang);
+        if (novel) {
           paths.push({ params: { slug: [lang, slug] } });
         }
       }
@@ -45,60 +43,65 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 // 静的プロップ生成も変更なし
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slugParams = params?.slug as string[] | undefined;
+  try {
+    const slugParams = params?.slug as string[] | undefined;
 
-  if (!slugParams || slugParams.length === 0) {
-    return { notFound: true };
-  }
-
-  let lang: LanguageCode = DEFAULT_LANGUAGE;
-  let novelSlug: string;
-
-  if (slugParams.length === 1) {
-    novelSlug = slugParams[0];
-  } else if (slugParams.length === 2 && isValidLang(slugParams[0])) {
-    lang = slugParams[0] as LanguageCode;
-    novelSlug = slugParams[1];
-  } else {
-    return { notFound: true };
-  }
-
-  const novel = getNovelBySlug(novelSlug, lang);
-
-  if (!novel) {
-    if (lang !== DEFAULT_LANGUAGE) {
-      const defaultLangNovel = getNovelBySlug(novelSlug, DEFAULT_LANGUAGE);
-      if (defaultLangNovel) {
-        return { notFound: true };
-      }
+    if (!slugParams || slugParams.length === 0) {
+      return { notFound: true };
     }
+
+    let lang: LanguageCode = DEFAULT_LANGUAGE;
+    let novelSlug: string;
+
+    if (slugParams.length === 1) {
+      novelSlug = slugParams[0];
+    } else if (slugParams.length === 2 && isValidLang(slugParams[0])) {
+      lang = slugParams[0] as LanguageCode;
+      novelSlug = slugParams[1];
+    } else {
+      return { notFound: true };
+    }
+
+    const novel = getNovelBySlug(novelSlug, lang);
+
+    if (!novel) {
+      if (lang !== DEFAULT_LANGUAGE) {
+        const defaultLangNovel = getNovelBySlug(novelSlug, DEFAULT_LANGUAGE);
+        if (defaultLangNovel) {
+          return { notFound: true };
+        }
+      }
+      return { notFound: true };
+    }
+
+    const availableLanguages: LanguageCode[] = [DEFAULT_LANGUAGE];
+    const baseSlug = novel.slug;
+    Object.keys(SUPPORTED_LANGUAGES).forEach(lCode => {
+      if (lCode !== DEFAULT_LANGUAGE) {
+        const langNovel = getNovelBySlug(baseSlug, lCode as LanguageCode);
+        if (langNovel) {
+          availableLanguages.push(lCode as LanguageCode);
+        }
+      }
+    });
+    
+    const novelWithAvailableLanguages = { 
+      ...novel, 
+      availableLanguages,
+      readingTime: calculateReadingTime(novel.content)
+    };
+
+    return {
+      props: {
+        novel: novelWithAvailableLanguages,
+        currentLanguage: lang,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    // 例外発生時は404
     return { notFound: true };
   }
-
-  const availableLanguages: LanguageCode[] = [DEFAULT_LANGUAGE];
-  const baseSlug = novel.slug;
-  Object.keys(SUPPORTED_LANGUAGES).forEach(lCode => {
-    if (lCode !== DEFAULT_LANGUAGE) {
-      const langFilePath = path.join(process.cwd(), "src/content/novels", `${baseSlug}.${lCode}.md`);
-      if (fs.existsSync(langFilePath)) {
-        availableLanguages.push(lCode as LanguageCode);
-      }
-    }
-  });
-  
-  const novelWithAvailableLanguages = { 
-    ...novel, 
-    availableLanguages,
-    readingTime: calculateReadingTime(novel.content)
-  };
-
-  return {
-    props: {
-      novel: novelWithAvailableLanguages,
-      currentLanguage: lang,
-    },
-    revalidate: 60,
-  };
 };
 
 // 文章の読了時間を計算する関数

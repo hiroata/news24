@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const matter = require('gray-matter');
-const i18n = require('./utils/i18n');
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import * as i18n from './utils/i18n';
 const { DEFAULT_LANGUAGE } = i18n;
 
 // 小説コンテンツのベースディレクトリ
@@ -140,10 +140,4 @@ function getAllTags(lang = DEFAULT_LANGUAGE) {
   return tagCounts;
 }
 
-module.exports = {
-  getAllNovelSlugs,
-  getAllNovels,
-  getNovelBySlug,
-  getNovelsByTag,
-  getAllTags
-};
+export { getAllNovelSlugs, getAllNovels, getNovelBySlug, getAllTags, getNovelsByTag };

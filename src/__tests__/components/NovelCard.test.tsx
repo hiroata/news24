@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import NovelCard from './NovelCard';
-import { NovelData } from '../lib/novels';
+import NovelCard from '../../../components/NovelCard';
+import type { NovelData } from '../../../types/novel';
 
 const mockNovel: NovelData = {
   slug: 'test-novel',
