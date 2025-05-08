@@ -1,7 +1,7 @@
 // クライアント側で利用するAPI呼び出し関数
 // サーバーサイドのAPIを安全に呼び出すためのラッパー
 
-import { fetchWithErrorHandling, logError, getFriendlyErrorMessage } from '../utils/apiUtils';
+const { fetchWithErrorHandling, logError, getFriendlyErrorMessage } = require('../utils/apiUtils');
 
 /**
  * テキスト生成API呼び出しのためのクライアント側ラッパー
@@ -11,7 +11,7 @@ import { fetchWithErrorHandling, logError, getFriendlyErrorMessage } from '../ut
  * @param temperature 温度パラメータ
  * @returns 生成されたテキスト
  */
-export async function generateTextClient(
+async function generateTextClient(
   prompt: string,
   model: string = 'grok',
   maxTokens: number = 4000,
@@ -48,7 +48,7 @@ export async function generateTextClient(
  * @param targetLang 対象言語
  * @returns 翻訳されたテキスト
  */
-export async function translateTextClient(
+async function translateTextClient(
   text: string,
   targetLang: string = 'ja'
 ): Promise<{ translatedText: string; error?: string }> {
@@ -81,7 +81,7 @@ export async function translateTextClient(
  * @param voice 音声モデル名
  * @returns 音声URL
  */
-export async function generateAudioClient(
+async function generateAudioClient(
   text: string,
   voice: string = 'ja-female-1'
 ): Promise<{ audioUrl: string; error?: string }> {
@@ -107,3 +107,9 @@ export async function generateAudioClient(
     };
   }
 }
+
+module.exports = {
+  generateTextClient,
+  translateTextClient,
+  generateAudioClient
+};

@@ -4,15 +4,15 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 // クライアント側にも公開する設定
 // API URL
-export const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
-export const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent";
+const GROK_API_URL = "https://api.x.ai/v1/chat/completions";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent";
 
 // モデル設定
-export const GROK_MODEL = "grok-3-latest";
-export const GEMINI_MODEL = "gemini-2.5-pro-preview-03-25";
+const GROK_MODEL = "grok-3-latest";
+const GEMINI_MODEL = "gemini-2.5-pro-preview-03-25";
 
 // 利用可能なモデルリスト
-export const AVAILABLE_MODELS = {
+const AVAILABLE_MODELS = {
   grok: {
     name: "Grok 3",
     model_id: GROK_MODEL,
@@ -26,7 +26,7 @@ export const AVAILABLE_MODELS = {
 };
 
 // 文体設定（例）
-export const WRITING_STYLES = {
+const WRITING_STYLES = {
   murakami: "村上龍のような都会的で生々しい描写と冷静な語り口...",
   dan: "団鬼六のようなSM描写に特化した...",
   eromanga: "日本のエロ同人マンガのような過激で卑猥な表現...",
@@ -36,7 +36,7 @@ export const WRITING_STYLES = {
 };
 
 // 淫語セリフパターン（例）
-export const EROTIC_DIALOG_PATTERNS = {
+const EROTIC_DIALOG_PATTERNS = {
   ahe: ["「あぁっ…ん゛っ、ン゛ッ…！そこぉっ…！」"],
   beg: ["「お願いぃ…もっと、もっと激しくぅ…！」"],
   shame: ["「こんな場所でぇ…見られたら終わりなのにぃ…！」"],
@@ -46,6 +46,14 @@ export const EROTIC_DIALOG_PATTERNS = {
   onomatopoeia: ["「ズチュッ、ズチュッ…！チンポがマンコをかき回してぇ…！」"]
 };
 
-// サーバーサイドでのみ利用するAPIキーをエクスポート
-// この方法だとNext.jsではサーバーサイドコンポーネントやAPIルートでのみ利用可能になる
-export { GROK_API_KEY, GEMINI_API_KEY };
+module.exports = {
+  GROK_API_KEY, 
+  GEMINI_API_KEY,
+  GROK_API_URL,
+  GEMINI_API_URL,
+  GROK_MODEL,
+  GEMINI_MODEL,
+  AVAILABLE_MODELS,
+  WRITING_STYLES,
+  EROTIC_DIALOG_PATTERNS
+};

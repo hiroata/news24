@@ -1,19 +1,15 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { getAllNovels } from '../../../lib/novels';
-import type { NovelData } from '../../../types/novel';
-import { LanguageCode, DEFAULT_LANGUAGE, isValidLang } from '../../../lib/utils/i18n';
-import { ApiError, getFriendlyErrorMessage } from '../../../lib/utils/apiUtils';
+const { getAllNovels } = require('../../../lib/novels');
+const i18n = require('../../../lib/utils/i18n');
+const { DEFAULT_LANGUAGE, isValidLang } = i18n;
+const { ApiError, getFriendlyErrorMessage } = require('../../../lib/utils/apiUtils');
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<NovelData[] | { error: string; message?: string }>
-) {
+async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    let lang = req.query.lang as LanguageCode | undefined;
+    let lang = req.query.lang;
 
     if (lang && !isValidLang(lang)) {
       throw new ApiError(400, 'Bad Request', 'Invalid language code provided.');
@@ -25,7 +21,7 @@ export default async function handler(
     const novels = getAllNovels(lang);
     return res.status(200).json(novels);
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('API Error getting novels:', error);
     if (error instanceof ApiError) {
       return res.status(error.status).json({ 
@@ -39,3 +35,5 @@ export default async function handler(
     });
   }
 }
+
+module.exports = handler;

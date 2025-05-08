@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import { LanguageCode, DEFAULT_LANGUAGE, getLocalizedFilename } from './utils/i18n';
-import type { NovelData } from '../types/novel';
+const fs = require('fs');
+const path = require('path');
+const matter = require('gray-matter');
+const i18n = require('./utils/i18n');
+const { DEFAULT_LANGUAGE } = i18n;
 
 // 小説コンテンツのベースディレクトリ
 const NOVELS_DIRECTORY = path.join(process.cwd(), 'src/content/novels');
@@ -10,7 +10,7 @@ const NOVELS_DIRECTORY = path.join(process.cwd(), 'src/content/novels');
 /**
  * すべての小説のスラッグを取得
  */
-export function getAllNovelSlugs(): string[] {
+function getAllNovelSlugs() {
   try {
     // .mdファイルのみを取得し、言語コード(.ja.md等)がついていないものをベースとする
     const fileNames = fs.readdirSync(NOVELS_DIRECTORY);
@@ -29,10 +29,10 @@ export function getAllNovelSlugs(): string[] {
 /**
  * 特定の言語のすべての小説データを取得
  */
-export function getAllNovels(lang: LanguageCode = DEFAULT_LANGUAGE): NovelData[] {
+function getAllNovels(lang = DEFAULT_LANGUAGE) {
   const slugs = getAllNovelSlugs();
   const allNovelsData = slugs.map(slug => getNovelBySlug(slug, lang))
-    .filter(novel => novel !== null) as NovelData[];
+    .filter(novel => novel !== null);
   
   // 日付順に並べ替え（新しい順）
   return allNovelsData.sort((a, b) => {
@@ -47,10 +47,10 @@ export function getAllNovels(lang: LanguageCode = DEFAULT_LANGUAGE): NovelData[]
 /**
  * 特定のスラッグと言語の小説データを取得
  */
-export function getNovelBySlug(
-  slug: string, 
-  lang: LanguageCode = DEFAULT_LANGUAGE
-): NovelData | null {
+function getNovelBySlug(
+  slug, 
+  lang = DEFAULT_LANGUAGE
+) {
   try {
     // 言語に応じたファイル名を生成
     const fileName = lang === DEFAULT_LANGUAGE 
@@ -80,7 +80,9 @@ export function getNovelBySlug(
       content,
       language: lang,
       translatedFrom: lang !== DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : null, // undefinedの代わりにnullを使用
-      audioUrl: data.audioUrl || null // こちらも念のためnullに変換
+      audioUrl: data.audioUrl || null, // こちらも念のためnullに変換
+      coverImage: data.coverImage || null, // coverImageを追加
+      readingTime: data.readingTime || calculateReadingTime(content) // 読書時間を計算
     };
   } catch (error) {
     console.error(`Error reading novel ${slug}:`, error);
@@ -89,12 +91,35 @@ export function getNovelBySlug(
 }
 
 /**
+ * コンテンツの文字数から読書時間を概算する（日本語向け）
+ * @param {string} content - 小説本文
+ * @returns {string} - 読書時間の文字列表現
+ */
+function calculateReadingTime(content) {
+  const wordsPerMinute = 400; // 日本語の場合は文字数ベース
+  const characterCount = content.replace(/\s+/g, '').length; // 空白を除外
+  const minutes = Math.ceil(characterCount / wordsPerMinute);
+  
+  if (minutes < 1) {
+    return '1分未満';
+  } else if (minutes < 60) {
+    return `約${minutes}分`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0 
+      ? `約${hours}時間${remainingMinutes}分` 
+      : `約${hours}時間`;
+  }
+}
+
+/**
  * タグでフィルタリングした小説データを取得
  */
-export function getNovelsByTag(
-  tag: string,
-  lang: LanguageCode = DEFAULT_LANGUAGE
-): NovelData[] {
+function getNovelsByTag(
+  tag,
+  lang = DEFAULT_LANGUAGE
+) {
   const allNovels = getAllNovels(lang);
   return allNovels.filter(novel => novel.tags.includes(tag));
 }
@@ -102,9 +127,9 @@ export function getNovelsByTag(
 /**
  * すべてのタグとその記事数を取得
  */
-export function getAllTags(lang: LanguageCode = DEFAULT_LANGUAGE): Record<string, number> {
+function getAllTags(lang = DEFAULT_LANGUAGE) {
   const novels = getAllNovels(lang);
-  const tagCounts: Record<string, number> = {};
+  const tagCounts = {};
   
   novels.forEach(novel => {
     novel.tags.forEach(tag => {
@@ -114,3 +139,11 @@ export function getAllTags(lang: LanguageCode = DEFAULT_LANGUAGE): Record<string
   
   return tagCounts;
 }
+
+module.exports = {
+  getAllNovelSlugs,
+  getAllNovels,
+  getNovelBySlug,
+  getNovelsByTag,
+  getAllTags
+};

@@ -1,6 +1,6 @@
-import { GROK_API_KEY, GROK_API_URL, GROK_MODEL } from "../utils/config";
+const { GROK_API_KEY, GROK_API_URL, GROK_MODEL } = require("../utils/config");
 
-export async function generateText(
+async function generateText(
   prompt: string,
   model: string = GROK_MODEL,
   maxTokens: number = 4000,
@@ -25,3 +25,5 @@ export async function generateText(
   const data = await response.json();
   return data.text;
 }
+
+module.exports = { generateText };

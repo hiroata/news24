@@ -1,9 +1,8 @@
 // API Route for translation
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { GEMINI_API_KEY } from '../../lib/utils/config';
-import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/utils/apiUtils';
+const { GEMINI_API_KEY } = require('../../lib/utils/config');
+const { ApiError, getFriendlyErrorMessage, logError } = require('../../lib/utils/apiUtils');
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -26,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // ダミー実装（将来的にはAPIを使用）
       translatedText = await simulateTranslation(text, targetLang);
-    } catch (translationError: any) {
+    } catch (translationError) {
       logError(translationError, 'Translation API call'); // エラーログ
       // 翻訳サービス自体のエラーは ApiError でラップして返す
       throw new ApiError(503, 'Service Unavailable', 'Translation service failed', translationError);
@@ -38,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       originalLength: text.length,
       translatedLength: translatedText.length
     });
-  } catch (error: any) {
+  } catch (error) {
     logError(error, 'API /api/translate handler'); // エラーログ
     if (error instanceof ApiError) {
       return res.status(error.status).json({ 
@@ -57,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 // 翻訳APIが完全に実装されるまでのダミー関数
-async function simulateTranslation(text: string, targetLang: string): Promise<string> {
+async function simulateTranslation(text, targetLang) {
   // 実際のAPIを使用する前の一時的な実装
   if (targetLang === 'ja' && !isJapanese(text)) {
     return `[${targetLang}翻訳] ${text}`;
@@ -70,7 +69,9 @@ async function simulateTranslation(text: string, targetLang: string): Promise<st
 }
 
 // 日本語かどうかを判定する簡易関数
-function isJapanese(text: string): boolean {
+function isJapanese(text) {
   // 日本語の文字コード範囲を検出
   return /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/.test(text);
 }
+
+module.exports = handler;

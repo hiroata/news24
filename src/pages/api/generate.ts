@@ -1,10 +1,9 @@
 // API Route for text generation
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { generateText } from '../../lib/api/grok_api';
-import { AVAILABLE_MODELS } from '../../lib/utils/config';
-import { ApiError, getFriendlyErrorMessage, logError } from '../../lib/utils/apiUtils'; // logError と getFriendlyErrorMessage をインポート
+const { generateText } = require('../../lib/api/grok_api');
+const { AVAILABLE_MODELS } = require('../../lib/utils/config');
+const { ApiError, getFriendlyErrorMessage, logError } = require('../../lib/utils/apiUtils');
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -17,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // モデル名の検証
-    if (!AVAILABLE_MODELS[model as keyof typeof AVAILABLE_MODELS]) {
+    if (!AVAILABLE_MODELS[model]) {
       throw new ApiError(400, 'Bad Request', 'Invalid model');
     }
 
@@ -28,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       model: model,
       timestamp: new Date().toISOString()
     });
-  } catch (error: any) {
+  } catch (error) {
     logError(error, 'API /api/generate handler'); // エラーログ
     if (error instanceof ApiError) {
       return res.status(error.status).json({ 
@@ -45,3 +44,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 }
+
+module.exports = handler;
