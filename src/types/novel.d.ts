@@ -11,4 +11,6 @@ export interface NovelData {
   language: LanguageCode;
   translatedFrom?: string;
   audioUrl?: string;
+  coverImage?: string;
+  readingTime?: number;
 }

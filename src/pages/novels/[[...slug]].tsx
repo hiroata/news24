@@ -13,16 +13,23 @@ import { useState, useEffect } from "react";
 import { getNovelBySlug, getAllNovelSlugs } from "../../lib/novels";
 import type { NovelData } from "../../types/novel";
 import Head from "next/head";
+import { 
+  ArrowLeftIcon, 
+  CalendarIcon, 
+  ClockIcon, 
+  ShareIcon,
+  BookmarkIcon,
+  DocumentTextIcon
+} from '@heroicons/react/24/outline';
 
+// 静的パス生成は変更なし
 export const getStaticPaths: GetStaticPaths = async () => {
-  const slugs = getAllNovelSlugs(); // ベースとなるスラッグを取得 (例: novel-001)
+  const slugs = getAllNovelSlugs();
   const paths: { params: { slug: string[] }; locale?: string }[] = [];
 
   slugs.forEach(slug => {
-    // デフォルト言語のパス
     paths.push({ params: { slug: [slug] } });
 
-    // サポートされている他の言語のパス
     Object.keys(SUPPORTED_LANGUAGES).forEach(lang => {
       if (lang !== DEFAULT_LANGUAGE) {
         const langFilePath = path.join(process.cwd(), "src/content/novels", `${slug}.${lang}.md`);
@@ -33,9 +40,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
     });
   });
 
-  return { paths, fallback: 'blocking' }; // fallback: 'blocking' で ISR も可能に
+  return { paths, fallback: 'blocking' };
 };
 
+// 静的プロップ生成も変更なし
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slugParams = params?.slug as string[] | undefined;
 
@@ -58,21 +66,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const novel = getNovelBySlug(novelSlug, lang);
 
   if (!novel) {
-    // フォールバック: 要求された言語で見つからない場合、デフォルト言語で試す
     if (lang !== DEFAULT_LANGUAGE) {
       const defaultLangNovel = getNovelBySlug(novelSlug, DEFAULT_LANGUAGE);
       if (defaultLangNovel) {
-        // デフォルト言語版にリダイレクトするための情報を渡すことも検討できる
-        // ここではとりあえず notFound とする
         return { notFound: true };
       }
     }
     return { notFound: true };
   }
 
-  // 利用可能な翻訳言語を確認 (getNovelBySlug 内で処理されても良いが、ここで明示的に行う)
   const availableLanguages: LanguageCode[] = [DEFAULT_LANGUAGE];
-  const baseSlug = novel.slug; // getNovelBySlug が返す slug は言語情報を含まないはず
+  const baseSlug = novel.slug;
   Object.keys(SUPPORTED_LANGUAGES).forEach(lCode => {
     if (lCode !== DEFAULT_LANGUAGE) {
       const langFilePath = path.join(process.cwd(), "src/content/novels", `${baseSlug}.${lCode}.md`);
@@ -82,31 +86,51 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
   });
   
-  // novelオブジェクトに availableLanguages を追加
-  const novelWithAvailableLanguages = { ...novel, availableLanguages };
+  const novelWithAvailableLanguages = { 
+    ...novel, 
+    availableLanguages,
+    readingTime: calculateReadingTime(novel.content)
+  };
 
   return {
     props: {
       novel: novelWithAvailableLanguages,
-      currentLanguage: lang, // 現在表示している言語を渡す
+      currentLanguage: lang,
     },
-    revalidate: 60, // 60秒ごとにISRで再生成
+    revalidate: 60,
   };
 };
 
+// 文章の読了時間を計算する関数
+function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
+}
+
 interface NovelDetailProps {
-  novel: NovelData & { availableLanguages: LanguageCode[] };
+  novel: NovelData & { 
+    availableLanguages: LanguageCode[],
+    readingTime?: number
+  };
   currentLanguage: LanguageCode;
 }
 
 export default function NovelDetailPage({ novel, currentLanguage }: NovelDetailProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   // router.query.slug が配列であることを期待
   const slugPathParts = router.query.slug as string[] || [];
   const actualSlug = slugPathParts.length > 1 ? slugPathParts[slugPathParts.length -1] : slugPathParts[0];
 
+  // 関連記事（本来はAPIから取得）
+  const relatedArticles = [
+    { id: 1, title: "関連記事1", slug: "related-1" },
+    { id: 2, title: "関連記事2", slug: "related-2" },
+    { id: 3, title: "関連記事3", slug: "related-3" },
+  ];
 
   const handleLanguageChange = (selectedLang: LanguageCode) => {
     setIsLoading(true);
@@ -121,86 +145,212 @@ export default function NovelDetailPage({ novel, currentLanguage }: NovelDetailP
   useEffect(() => {
     const handleRouteChangeComplete = () => setIsLoading(false);
     router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    
+    // ブックマーク状態を確認（ローカルストレージから）
+    const checkIfBookmarked = () => {
+      if (typeof window !== 'undefined') {
+        const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+        setIsBookmarked(bookmarks.includes(novel.slug));
+      }
+    };
+    checkIfBookmarked();
+    
     return () => {
       router.events.off('routeChangeComplete', handleRouteChangeComplete);
     };
-  }, [router.events]);
+  }, [router.events, novel.slug]);
 
+  // ブックマークの切り替え
+  const toggleBookmark = () => {
+    if (typeof window !== 'undefined') {
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      let newBookmarks = [];
+      
+      if (isBookmarked) {
+        newBookmarks = bookmarks.filter((slug: string) => slug !== novel.slug);
+      } else {
+        newBookmarks = [...bookmarks, novel.slug];
+      }
+      
+      localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
+      setIsBookmarked(!isBookmarked);
+    }
+  };
+
+  // 共有機能
+  const shareArticle = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: novel.title,
+        text: novel.excerpt,
+        url: window.location.href,
+      })
+      .catch((error) => console.log('共有に失敗しました', error));
+    } else {
+      // Web Share API非対応の場合は、URLをクリップボードにコピー
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => alert('URLをクリップボードにコピーしました'))
+        .catch(() => alert('URLのコピーに失敗しました'));
+    }
+  };
 
   if (router.isFallback || !novel) {
-    return <div>Loading novel content...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-12 w-12 rounded-full bg-primary-200 dark:bg-primary-900 mb-4"></div>
+          <div className="text-primary-600 dark:text-primary-400">記事を読み込み中...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
       <Head>
-        <title>{novel.title} - EroNews Generator</title>
+        <title>{novel.title} - News24</title>
         <meta name="description" content={novel.excerpt || novel.content.slice(0, 150)} />
         <meta property="og:title" content={novel.title} />
         <meta property="og:description" content={novel.excerpt || novel.content.slice(0, 150)} />
-        {/* 他のOGPタグも追加可能 */}
+        <meta property="og:type" content="article" />
+        <meta property="article:published_time" content={novel.date} />
+        <meta property="article:tag" content={novel.tags.join(', ')} />
       </Head>
-      <main className="max-w-2xl mx-auto py-8 px-4">
-        {isLoading && (
-          <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
-            <div className="text-lg">読み込み中...</div>
+      
+      {/* ローディングオーバーレイ */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="h-12 w-12 rounded-full bg-primary-200 dark:bg-primary-900 mb-4"></div>
+            <div className="text-primary-600 dark:text-primary-400">読み込み中...</div>
           </div>
-        )}
-        
-        <div className="flex justify-between items-center mb-6">
-          <Link href="/" className="text-gray-500 hover:text-gray-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            トップに戻る
+        </div>
+      )}
+      
+      <main className="container-custom py-8 animate-fade-in">
+        {/* 記事ナビゲーションバー */}
+        <div className="flex justify-between items-center mb-8">
+          <Link href="/" 
+            className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
+            <span>トップに戻る</span>
           </Link>
           
-          <LanguageSwitcher 
-            onLanguageChange={handleLanguageChange}
-            className="ml-auto"
-          />
-        </div>
-
-        <h1 className="text-3xl font-bold mb-2">{novel.title}</h1>
-        <div className="text-sm text-gray-500 mb-4">{novel.date}</div>
-        
-        <div className="mb-6">
-          <TagList tags={novel.tags} />
-        </div>
-        
-        {novel.audioUrl && (
-          <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">音声版</h3>
-            <AudioPlayer src={novel.audioUrl} />
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={toggleBookmark}
+              className={`p-2 rounded-full transition-colors ${
+                isBookmarked 
+                  ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400' 
+                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+              aria-label={isBookmarked ? "ブックマークから削除" : "ブックマークに追加"}
+            >
+              <BookmarkIcon className="h-5 w-5" />
+            </button>
+            
+            <button
+              onClick={shareArticle}
+              className="p-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label="この記事を共有"
+            >
+              <ShareIcon className="h-5 w-5" />
+            </button>
+            
+            <LanguageSwitcher />
           </div>
-        )}
+        </div>
         
-        <article className="prose prose-pink max-w-none">
-          <ReactMarkdown>{novel.content}</ReactMarkdown>
-        </article>
-        
-        {novel.availableLanguages && novel.availableLanguages.length > 1 && (
-          <div className="mt-8 pt-4 border-t">
-            <h3 className="text-lg font-medium mb-2">他の言語で読む:</h3>
-            <div className="flex flex-wrap gap-2">
-              {novel.availableLanguages.map((langCode) => (
-                <button
-                  key={langCode}
-                  onClick={() => handleLanguageChange(langCode)}
-                  disabled={langCode === currentLanguage || isLoading}
-                  className={`flex items-center space-x-1 px-3 py-1 rounded-md transition-colors
-                    ${langCode === currentLanguage 
-                      ? 'bg-pink-500 text-white cursor-default' 
-                      : 'bg-gray-100 hover:bg-gray-200 disabled:opacity-50'
-                    }`}
-                >
-                  <span>{SUPPORTED_LANGUAGES[langCode]?.flag || ''}</span>
-                  <span>{SUPPORTED_LANGUAGES[langCode]?.name || langCode}</span>
-                </button>
-              ))}
+        <div className="max-w-3xl mx-auto">
+          {/* ヘッダーエリア */}
+          <header className="mb-8">
+            {/* カバー画像（あれば） */}
+            {novel.coverImage && (
+              <div className="relative h-64 md:h-96 mb-6 rounded-lg overflow-hidden shadow-lg">
+                <img
+                  src={novel.coverImage}
+                  alt={`${novel.title}のカバー画像`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            {/* タグリスト */}
+            <div className="mb-4">
+              <TagList tags={novel.tags} size="sm" />
             </div>
+            
+            {/* タイトル */}
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">
+              {novel.title}
+            </h1>
+            
+            {/* メタ情報 */}
+            <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 gap-4">
+              {novel.date && (
+                <div className="flex items-center">
+                  <CalendarIcon className="h-4 w-4 mr-1" />
+                  <time dateTime={novel.date}>{novel.date}</time>
+                </div>
+              )}
+              
+              {novel.readingTime && (
+                <div className="flex items-center">
+                  <ClockIcon className="h-4 w-4 mr-1" />
+                  <span>読了時間: 約{novel.readingTime}分</span>
+                </div>
+              )}
+              
+              <div className="flex items-center">
+                <DocumentTextIcon className="h-4 w-4 mr-1" />
+                <span>文字数: {novel.content.length}文字</span>
+              </div>
+            </div>
+          </header>
+          
+          {/* 音声プレーヤー */}
+          {novel.audioUrl && (
+            <div className="mb-8 bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden">
+              <AudioPlayer src={novel.audioUrl} />
+            </div>
+          )}
+          
+          {/* 記事本文 */}
+          <article className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-a:text-primary-600 dark:prose-a:text-primary-400 mb-10">
+            <ReactMarkdown>{novel.content}</ReactMarkdown>
+          </article>
+          
+          {/* タグフッター */}
+          <div className="border-t border-b border-gray-200 dark:border-gray-800 py-6 my-8">
+            <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-3">関連タグ:</h3>
+            <TagList tags={novel.tags} size="md" />
           </div>
-        )}
+          
+          {/* 言語切り替えセクション */}
+          {novel.availableLanguages && novel.availableLanguages.length > 1 && (
+            <div className="my-8">
+              <h3 className="text-xl font-medium mb-3 text-gray-900 dark:text-white">他の言語で読む</h3>
+              <div className="flex flex-wrap gap-2">
+                {novel.availableLanguages.map((langCode) => (
+                  <button
+                    key={langCode}
+                    onClick={() => handleLanguageChange(langCode)}
+                    disabled={langCode === currentLanguage || isLoading}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-md transition-colors
+                      ${langCode === currentLanguage 
+                        ? 'bg-primary-100 border border-primary-200 text-primary-800 dark:bg-primary-900/30 dark:border-primary-800 dark:text-primary-400 cursor-default' 
+                        : 'bg-gray-100 border border-gray-200 hover:bg-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300'
+                      }`}
+                  >
+                    <span>{SUPPORTED_LANGUAGES[langCode]?.flag || ''}</span>
+                    <span>{SUPPORTED_LANGUAGES[langCode]?.name || langCode}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </>
   );
