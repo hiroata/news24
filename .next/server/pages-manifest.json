@@ -1,1 +1,14 @@
-{"/api/novels/list":"pages/api/novels/list.js","/_app":"pages/_app.js","/api/generate":"pages/api/generate.js","/api/translate":"pages/api/translate.js","/_error":"pages/_error.js","/tags/[tag]":"pages/tags/[tag].js","/":"pages/index.js","/novels/[[...slug]]":"pages/novels/[[...slug]].js","/_document":"pages/_document.js","/404":"pages/404.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/api/generate": "pages/api/generate.js",
+  "/api/novels/list": "pages/api/novels/list.js",
+  "/api/translate": "pages/api/translate.js",
+  "/api/articles/list": "pages/api/articles/list.js",
+  "/": "pages/index.js",
+  "/categories/[category]": "pages/categories/[category].js",
+  "/articles/[slug]": "pages/articles/[slug].js",
+  "/novels/[[...slug]]": "pages/novels/[[...slug]].js",
+  "/tags/[tag]": "pages/tags/[tag].js",
+  "/_document": "pages/_document.js"
+}

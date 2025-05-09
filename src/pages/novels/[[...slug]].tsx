@@ -23,14 +23,13 @@ import {
 export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = getAllNovelSlugs();
   const paths: { params: { slug: string[] }; locale?: string }[] = [];
-
   slugs.forEach(slug => {
     paths.push({ params: { slug: [slug] } });
     // 多言語ファイルの存在確認はlib/novels.ts側で行い、ここでは全言語分のパスを生成
     Object.keys(SUPPORTED_LANGUAGES).forEach(lang => {
       if (lang !== DEFAULT_LANGUAGE) {
         // その言語の小説データが存在する場合のみパスを追加
-        const novel = getNovelBySlug(slug, lang);
+        const novel = getNovelBySlug(slug, lang as LanguageCode);
         if (novel) {
           paths.push({ params: { slug: [lang, slug] } });
         }

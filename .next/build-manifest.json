@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/S1oyqbQ3P42iC8mKXwLv9/_buildManifest.js",
-    "static/S1oyqbQ3P42iC8mKXwLv9/_ssgManifest.js"
+    "static/ULUXx0jfP2qzEGlhsvjnb/_buildManifest.js",
+    "static/ULUXx0jfP2qzEGlhsvjnb/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -14,15 +14,14 @@
       "static/chunks/webpack-6af0e3c12b874bb0.js",
       "static/chunks/framework-fae63b21a27d6472.js",
       "static/chunks/main-5232346dfb644e31.js",
-      "static/chunks/35-a6663914cdaa2277.js",
-      "static/chunks/pages/index-49f84ea5c0f80d0f.js"
+      "static/chunks/pages/index-6c739f89ff858d9a.js"
     ],
     "/_app": [
       "static/chunks/webpack-6af0e3c12b874bb0.js",
       "static/chunks/framework-fae63b21a27d6472.js",
       "static/chunks/main-5232346dfb644e31.js",
-      "static/css/89020b4a2aa40f72.css",
-      "static/chunks/pages/_app-86fd736afa82612b.js"
+      "static/css/db23e7dbcaac3708.css",
+      "static/chunks/pages/_app-b2fbbdae04f7b30e.js"
     ],
     "/_error": [
       "static/chunks/webpack-6af0e3c12b874bb0.js",
@@ -30,19 +29,31 @@
       "static/chunks/main-5232346dfb644e31.js",
       "static/chunks/pages/_error-ee5b5fb91d29d86f.js"
     ],
+    "/articles/[slug]": [
+      "static/chunks/webpack-6af0e3c12b874bb0.js",
+      "static/chunks/framework-fae63b21a27d6472.js",
+      "static/chunks/main-5232346dfb644e31.js",
+      "static/chunks/827-746041b282847607.js",
+      "static/chunks/pages/articles/[slug]-4e511ba0e8b7fe73.js"
+    ],
+    "/categories/[category]": [
+      "static/chunks/webpack-6af0e3c12b874bb0.js",
+      "static/chunks/framework-fae63b21a27d6472.js",
+      "static/chunks/main-5232346dfb644e31.js",
+      "static/chunks/pages/categories/[category]-d3b55eca25d12f2a.js"
+    ],
     "/novels/[[...slug]]": [
       "static/chunks/webpack-6af0e3c12b874bb0.js",
       "static/chunks/framework-fae63b21a27d6472.js",
       "static/chunks/main-5232346dfb644e31.js",
-      "static/chunks/739-bd880cf8ca708912.js",
-      "static/chunks/pages/novels/[[...slug]]-b09c24c520d8144a.js"
+      "static/chunks/827-746041b282847607.js",
+      "static/chunks/pages/novels/[[...slug]]-494b20023002af27.js"
     ],
     "/tags/[tag]": [
       "static/chunks/webpack-6af0e3c12b874bb0.js",
       "static/chunks/framework-fae63b21a27d6472.js",
       "static/chunks/main-5232346dfb644e31.js",
-      "static/chunks/35-a6663914cdaa2277.js",
-      "static/chunks/pages/tags/[tag]-b7e60752ed6b8ba2.js"
+      "static/chunks/pages/tags/[tag]-29df5cee727ce11a.js"
     ]
   },
   "ampFirstPages": []

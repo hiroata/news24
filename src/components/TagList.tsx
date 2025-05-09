@@ -62,19 +62,67 @@ interface TagListProps {
   size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
   asLinks?: boolean;
+  selectedTag?: string | null;
+  onClick?: (tag: string) => void;
+  showCount?: boolean;
+  counts?: Record<string, number>;
+  variant?: 'default' | 'light';
 }
 
 // 複数のタグを表示するコンポーネント
-export default function TagList({ tags, size = 'md', className = '', asLinks = true }: TagListProps) {
+export default function TagList({ 
+  tags, 
+  size = 'md', 
+  className = '', 
+  asLinks = true,
+  selectedTag = null,
+  onClick,
+  showCount = false,
+  counts = {},
+  variant = 'default'
+}: TagListProps) {
   if (!tags || tags.length === 0) return null;
+
+  const handleTagClick = (tag: string) => {
+    if (onClick) {
+      onClick(tag);
+    }
+  };
+
+  const variantClasses = {
+    default: "",
+    light: "text-white bg-white/20 hover:bg-white/30 border border-white/30"
+  };
 
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
-      {tags.map(tag => (
-        <div key={tag} className="animate-fade-in">
-          <Tag tag={tag} size={size} asLink={asLinks} />
-        </div>
-      ))}
+      {tags.map(tag => {
+        const isSelected = selectedTag === tag;
+        const tagCount = showCount && counts ? counts[tag] : null;
+        
+        return (
+          <div key={tag} className="animate-fade-in">
+            {onClick ? (
+              <button
+                onClick={() => handleTagClick(tag)}
+                className={`inline-flex items-center justify-center space-x-1 rounded-full transition-all duration-200 
+                  ${size === 'xs' ? "text-xs px-2 py-0.5" : size === 'sm' ? "text-xs px-2.5 py-0.5" : size === 'lg' ? "text-base px-4 py-1.5" : "text-sm px-3 py-1"}
+                  ${isSelected 
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' 
+                    : `bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 ${variantClasses[variant]}`
+                  }`}
+                type="button"
+              >
+                <HashtagIcon className={`${size === 'xs' ? "w-3 h-3" : size === 'sm' ? "w-3 h-3" : size === 'lg' ? "w-4 h-4" : "w-3.5 h-3.5"} opacity-70`} />
+                <span>{tag}</span>
+                {tagCount !== null && <span className="ml-1 opacity-70">({tagCount})</span>}
+              </button>
+            ) : (
+              <Tag tag={tag} size={size} asLink={asLinks} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
