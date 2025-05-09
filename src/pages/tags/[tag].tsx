@@ -3,13 +3,13 @@ import Link from "next/link";
 import Head from "next/head";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { Tag } from "../../components/TagList";
-import { getAllTags, getNovelsByTag } from "../../lib/novels";
-import type { NovelData } from "../../types/novel";
+import { getAllTags, getArticlesByTag } from "../../lib/articles";
+import type { ArticleData } from "../../types/article";
 import { DEFAULT_LANGUAGE, LanguageCode } from "../../lib/utils/i18n";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { useState } from "react";
 import TagList from "../../components/TagList";
-import NovelList from "../../components/NovelList";
+import ArticleList from "../../components/ArticleList";
 import { 
   ArrowLeftIcon, 
   HashtagIcon, 
@@ -29,13 +29,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     const tag = params?.tag as string;
   
     // 共通ライブラリ関数を使用
-    const novels = getNovelsByTag(tag);
+    const articles = getArticlesByTag(tag);
     const allTags = getAllTags();
   
     // 関連タグを抽出 (同じ記事に含まれるタグを関連タグとして抽出)
     const relatedTagsMap: Record<string, number> = {};
-    novels.forEach(novel => {
-      novel.tags.forEach(t => {
+    articles.forEach(article => {
+      article.tags.forEach(t => {
         if (t !== tag) {
           relatedTagsMap[t] = (relatedTagsMap[t] || 0) + 1;
         }
@@ -51,7 +51,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     return { 
       props: { 
         tag, 
-        novels,
+        articles,
         relatedTags,
         tagCount: allTags[tag] || 0
       } 
@@ -64,20 +64,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 interface TagPageProps {
   tag: string;
-  novels: NovelData[];
+  articles: ArticleData[];
   relatedTags: string[];
   tagCount: number;
 }
 
-export default function TagPage({ tag, novels, relatedTags, tagCount }: TagPageProps) {
+export default function TagPage({ tag, articles, relatedTags, tagCount }: TagPageProps) {
   const [currentLang, setCurrentLang] = useState<LanguageCode>(DEFAULT_LANGUAGE);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   return (
-    <>
-      <Head>
+    <>      <Head>
         <title>#{tag} の記事一覧 - News24</title>
-        <meta name="description" content={`${tag}に関する記事一覧。${novels.length}件の記事があります。`} />
+        <meta name="description" content={`${tag}に関する記事一覧。${articles.length}件の記事があります。`} />
       </Head>
       
       {/* ヒーローセクション */}
@@ -87,9 +86,8 @@ export default function TagPage({ tag, novels, relatedTags, tagCount }: TagPageP
             <div className="flex items-center mb-4">
               <HashtagIcon className="h-8 w-8 mr-2" />
               <h1 className="text-3xl md:text-4xl font-bold">{tag}</h1>
-            </div>
-            <p className="text-lg opacity-90">
-              <span className="font-medium">{novels.length}</span> 件の記事 / <span className="font-medium">{tagCount}</span> 回使用されたタグ
+            </div>            <p className="text-lg opacity-90">
+              <span className="font-medium">{articles.length}</span> 件の記事 / <span className="font-medium">{tagCount}</span> 回使用されたタグ
             </p>
           </div>
         </div>
@@ -131,11 +129,10 @@ export default function TagPage({ tag, novels, relatedTags, tagCount }: TagPageP
               </h3>
             </div>
           </div>
-          
-          {/* 記事リスト */}
+            {/* 記事リスト */}
           <div className="md:col-span-3">
-            {novels.length > 0 ? (
-              <NovelList novels={novels} initialViewMode={viewMode} />
+            {articles.length > 0 ? (
+              <ArticleList articles={articles} initialViewMode={viewMode} />
             ) : (
               <div className="text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
                 <svg

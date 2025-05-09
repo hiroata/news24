@@ -19,10 +19,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <>
-      <Head>
-        <title>News24 - 最新ニュースとノベル</title>
-        <meta name="description" content="最新のニュースとオリジナルノベルをお届けするNews24" />
+    <>      <Head>
+        <title>News24 - 海外テクノロジーニュース</title>
+        <meta name="description" content="海外のAI・テクノロジー最新ニュースを日本語でお届けするNews24" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         {/* Google Fontsの読み込み */}

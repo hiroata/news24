@@ -25,23 +25,24 @@ export const AVAILABLE_MODELS = {
   }
 };
 
-// 文体設定（例）
-export const WRITING_STYLES = {
-  murakami: "村上龍のような都会的で生々しい描写と冷静な語り口...",
-  dan: "団鬼六のようなSM描写に特化した...",
-  eromanga: "日本のエロ同人マンガのような過激で卑猥な表現...",
-  tanizaki: "谷崎潤一郎のような官能的で耽美的な文体...",
-  matayoshi: "又吉直樹のような現代的で鋭い観察眼と内省的な文体...",
-  higashino: "東野圭吾のような伏線と謎が絡み合う緻密な文体..."
+// テクノロジーカテゴリ設定
+export const TECH_CATEGORIES = {
+  ai: "AI・人工知能",
+  software: "ソフトウェア",
+  hardware: "ハードウェア",
+  mobile: "モバイル",
+  gaming: "ゲーム",
+  security: "セキュリティ",
+  blockchain: "ブロックチェーン",
+  business: "ビジネス",
+  technology: "テクノロジー全般"
 };
 
-// 淫語セリフパターン（例）
-export const EROTIC_DIALOG_PATTERNS = {
-  ahe: ["「あぁっ…ん゛っ、ン゛ッ…！そこぉっ…！」"],
-  beg: ["「お願いぃ…もっと、もっと激しくぅ…！」"],
-  shame: ["「こんな場所でぇ…見られたら終わりなのにぃ…！」"],
-  dom: ["「このドスケベマンコ、俺のチンポで完全調教してやるよ…！」"],
-  sub: ["「はいぃ…私はご主人様の専用肉便器ですぅ…！」"],
-  positive: ["「あぁっ、最高ぅっ…！チンポがマンコを抉ってきてぇ…！」"],
-  onomatopoeia: ["「ズチュッ、ズチュッ…！チンポがマンコをかき回してぇ…！」"]
-};
+// ニュースソース情報
+export const NEWS_SOURCES = [
+  { name: "TechCrunch", icon: "🔶", url: "https://techcrunch.com/" },
+  { name: "The Verge", icon: "📱", url: "https://www.theverge.com/" },
+  { name: "Wired", icon: "🔌", url: "https://www.wired.com/" },
+  { name: "MIT Tech Review", icon: "🧪", url: "https://www.technologyreview.com/" },
+  { name: "Engadget", icon: "📡", url: "https://www.engadget.com/" }
+];

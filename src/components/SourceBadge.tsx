@@ -1,4 +1,5 @@
 import React from 'react';
+import { NEWS_SOURCES } from '../lib/utils/config';
 
 interface SourceBadgeProps {
   source: string;
@@ -15,8 +16,13 @@ const SOURCE_COLORS = {
 const SourceBadge: React.FC<SourceBadgeProps> = ({ source }) => {
   const colorClass = SOURCE_COLORS[source] || 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/30 dark:border-gray-800 dark:text-gray-400';
   
+  // アイコンを取得
+  const sourceInfo = NEWS_SOURCES.find(s => s.name === source);
+  const icon = sourceInfo?.icon || '';
+  
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${colorClass}`}>
+      {icon && <span className="mr-1">{icon}</span>}
       {source}
     </span>
   );

@@ -8,9 +8,9 @@ import { Transition } from '@headlessui/react';
 
 const navigation = [
   { name: 'ホーム', href: '/' },
-  { name: 'ノベル', href: '/novels' },
+  { name: '記事一覧', href: '/articles' },
+  { name: 'カテゴリ', href: '/categories' },
   { name: 'タグ一覧', href: '/tags' },
-  { name: '新着情報', href: '/news' },
 ];
 
 export default function Header() {

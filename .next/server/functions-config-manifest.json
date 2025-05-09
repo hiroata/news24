@@ -1,1 +1,1 @@
-{"version":1,"functions":{"/articles/[slug]":{},"/categories/[category]":{},"/tags/[tag]":{},"/novels/[[...slug]]":{}}}
+{"version":1,"functions":{"/tags/[tag]":{},"/categories/[category]":{},"/articles/[slug]":{}}}
