@@ -1,8 +1,8 @@
 {
   "/_app": "pages/_app.js",
+  "/api/generate": "pages/api/generate.js",
   "/api/articles/list": "pages/api/articles/list.js",
   "/_error": "pages/_error.js",
-  "/api/generate": "pages/api/generate.js",
   "/api/translate": "pages/api/translate.js",
   "/": "pages/index.js",
   "/categories/[category]": "pages/categories/[category].js",
